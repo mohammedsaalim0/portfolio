@@ -1,0 +1,177 @@
+/* ==========================================================================
+   SAALIM'S WORLD — ACCESSIBILITY & RECRUITER CONTENT-FIRST STYLES
+   ========================================================================== */
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    #webgl-canvas {
+        display: none !important;
+    }
+
+    #story-scroll-container {
+        display: none !important;
+    }
+
+    #intro-screen {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    #accessible-content {
+        display: block !important;
+    }
+}
+
+/* Screen Reader Only Utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Visible Keyboard Focus Rings */
+:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+/* ==========================================================================
+   ACCESSIBLE CONTENT-FIRST CONTAINER (RECRUITER MODE & NO-WEBGL FALLBACK)
+   ========================================================================== */
+
+#accessible-content {
+    display: none;
+    position: relative;
+    z-index: 500;
+    max-width: 1100px;
+    margin: 90px auto 60px auto;
+    padding: 0 24px;
+    background: transparent;
+}
+
+/* When in recruiter mode or no-webgl, display accessible content */
+body[data-mode="recruiter"] #accessible-content,
+body.no-webgl #accessible-content {
+    display: block;
+}
+
+body[data-mode="recruiter"] #story-scroll-container,
+body.no-webgl #story-scroll-container,
+body[data-mode="recruiter"] #intro-screen,
+body.no-webgl #intro-screen,
+body[data-mode="recruiter"] #poi-container,
+body.no-webgl #poi-container,
+body[data-mode="recruiter"] .scroll-compass,
+body.no-webgl .scroll-compass {
+    display: none !important;
+}
+
+body[data-mode="recruiter"] #webgl-canvas,
+body.no-webgl #webgl-canvas {
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+.recruiter-hero {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+    border: 1px solid var(--border-subtle);
+    border-radius: 24px;
+    padding: 48px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow-elevation);
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    flex-wrap: wrap;
+}
+
+.recruiter-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 0 20px var(--color-primary-glow);
+    flex-shrink: 0;
+}
+
+.recruiter-details {
+    flex: 1;
+    min-width: 280px;
+}
+
+.recruiter-section {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-elevation);
+}
+
+.recruiter-section-title {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 14px;
+}
+
+.project-card-recruiter {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: all var(--transition-fast);
+}
+
+.project-card-recruiter:hover {
+    border-color: var(--border-glow);
+    background: rgba(30, 41, 59, 0.8);
+}
+
+.badge-featured {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-left: 8px;
+}
+
+.no-webgl-banner {
+    display: none;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #fef3c7;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+body.no-webgl .no-webgl-banner {
+    display: block;
+}

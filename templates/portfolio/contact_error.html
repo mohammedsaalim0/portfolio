@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 100;">
+    <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 20px; padding: 40px; max-width: 520px; text-align: center; box-shadow: var(--shadow-elevation);">
+        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px;">Submission Issue</h1>
+        <p style="color: #fca5a5; font-size: 15px; margin-bottom: 24px; line-height: 1.6;">
+            We could not process your message due to validation errors. Please check that all required fields are filled out properly.
+        </p>
+        <a href="{% url 'portfolio:index' %}" class="btn-cta secondary" style="display: inline-flex;">
+            Return &amp; Try Again
+        </a>
+    </div>
+</div>
+{% endblock %}

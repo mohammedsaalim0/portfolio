@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 100;">
+    <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 20px; padding: 48px 36px; max-width: 540px; text-align: center; box-shadow: var(--shadow-elevation);">
+        <div style="font-size: 64px; font-weight: 900; font-family: var(--font-heading); color: var(--color-ferrari); margin-bottom: 8px;">500</div>
+        <h1 style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 12px;">Turbulence in the Engine</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px; line-height: 1.6;">
+            An unexpected server anomaly occurred. Please try refreshing or reach out directly to Mohammed Saalim.
+        </p>
+        <a href="{% url 'portfolio:index' %}" class="btn-cta secondary" style="display: inline-flex;">
+            Return to Saalim's World
+        </a>
+    </div>
+</div>
+{% endblock %}

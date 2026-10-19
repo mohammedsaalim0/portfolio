@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 100;">
+    <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-glow); border-radius: 20px; padding: 40px; max-width: 520px; text-align: center; box-shadow: var(--shadow-elevation);">
+        <div style="font-size: 48px; margin-bottom: 16px;">🌱</div>
+        <h1 style="font-family: var(--font-heading); font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 12px;">Message Received!</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6;">
+            Thank you, <strong>{{ message.name }}</strong>. Your message regarding <em>"{{ message.subject }}"</em> has been safely received by Mohammed Saalim.
+        </p>
+        <a href="{% url 'portfolio:index' %}" class="btn-cta primary" style="display: inline-flex;">
+            Return to Saalim's World →
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: saalim_world_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_DEBUG=True
+      - DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost,web
+      - DJANGO_SECRET_KEY=django-insecure-saalim-cinematic-world-prod-secret-2027
+      - DB_ENGINE=sqlite
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+volumes:
+  static_volume:
+  media_volume:

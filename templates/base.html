@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- Primary Meta Tags -->
+    <title>{% block title %}{{ portfolio_profile.full_name }} — Cinematic 3D Developer Portfolio & World{% endblock %}</title>
+    <meta name="title" content="{{ portfolio_profile.full_name }} — {{ portfolio_profile.headline }}">
+    <meta name="description" content="Explore Saalim's World: An interactive cinematic 3D developer portfolio of Mohammed Saalim, Computer Science & Engineering student at SSIT Tumakuru. Features AgroSense IoT, Django & MySQL engineering, skills tower, and achievement hall.">
+    <meta name="author" content="{{ portfolio_profile.full_name }}">
+    <meta name="keywords" content="Mohammed Saalim, Full Stack Developer, Django, Python, Three.js, MySQL, SSIT Tumakuru, Computer Science Engineer, AgroSense, WebRTC, Portfolio">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{{ portfolio_profile.full_name }} — {{ portfolio_profile.headline }}">
+    <meta property="og:description" content="Cinematic 3D floating island portfolio showcasing full-stack web applications, Django architecture, AgroSense IoT project, and computer science engineering.">
+    <meta property="og:image" content="{% static 'images/og-preview.svg' %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="{{ portfolio_profile.full_name }} — {{ portfolio_profile.headline }}">
+    <meta property="twitter:description" content="Cinematic 3D floating island portfolio showcasing full-stack web applications, Django architecture, AgroSense IoT project, and computer science engineering.">
+    <meta property="twitter:image" content="{% static 'images/og-preview.svg' %}">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0d1520">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/world.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accessibility.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="cinematic-theme" data-mode="cinematic">
+    <!-- Accessible Skip Link -->
+    <a href="#accessible-content" class="skip-link">Skip directly to portfolio content (Recruiter View)</a>
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- Global Sound Synthesizer / Audio Component (Web Audio API) -->
+    <div id="audio-pill-container" class="audio-widget" aria-label="Audio controls">
+        <button id="audio-toggle-btn" class="audio-btn" aria-label="Toggle atmospheric sound (Muted by default)" title="Toggle atmospheric sound">
+            <span class="audio-icon muted" id="audio-icon-span" aria-hidden="true">🔇</span>
+            <span class="audio-label" id="audio-label-span">Sound: OFF</span>
+        </button>
+    </div>
+
+    <!-- Scripts Block -->
+    <script src="{% static 'js/vendor/three.min.js' %}"></script>
+    <script src="{% static 'js/config.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

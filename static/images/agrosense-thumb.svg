@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="600" height="360">
+    <defs>
+        <linearGradient id="farm-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#064e3b"/>
+            <stop offset="100%" stop-color="#022c22"/>
+        </linearGradient>
+    </defs>
+    <rect width="600" height="360" fill="url(#farm-sky)"/>
+    <!-- Crop Rows -->
+    <path d="M 50,360 L 250,180 L 350,180 L 550,360 Z" fill="#14532d"/>
+    <line x1="280" y1="180" x2="150" y2="360" stroke="#22c55e" stroke-width="6"/>
+    <line x1="300" y1="180" x2="300" y2="360" stroke="#16a34a" stroke-width="6"/>
+    <line x1="320" y1="180" x2="450" y2="360" stroke="#22c55e" stroke-width="6"/>
+    <!-- Sensor Station -->
+    <rect x="285" y="100" width="30" height="70" rx="4" fill="#334155"/>
+    <circle cx="300" cy="90" r="14" fill="#10b981"/>
+    <circle cx="300" cy="90" r="24" fill="none" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+    <!-- Badge -->
+    <rect x="20" y="20" width="180" height="32" rx="6" fill="#047857"/>
+    <text x="32" y="42" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="14" fill="#ffffff">AGROSENSE IOT</text>
+    <text x="20" y="320" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="24" fill="#ffffff">Smart Farmer Advisory System</text>
+    <text x="20" y="342" font-family="'Segoe UI', sans-serif" font-size="14" fill="#86efac">Django • ESP32 • MQTT • Automated Soil Irrigation</text>
+</svg>

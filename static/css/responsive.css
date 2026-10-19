@@ -1,0 +1,129 @@
+/* ==========================================================================
+   SAALIM'S WORLD — RESPONSIVE STYLES
+   Mobile, Tablet, and Portrait Orientations
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .hud-header {
+        padding: 0 20px;
+    }
+
+    .hud-nav {
+        display: none; /* Replaced by mobile drawer/navigation toggle */
+    }
+
+    .panel-drawer {
+        width: 95%;
+        padding: 24px;
+        max-height: 90vh;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .arch-flow-diagram {
+        flex-direction: column;
+    }
+
+    .arch-connector {
+        transform: rotate(90deg);
+        margin: 8px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .hud-header {
+        height: 60px;
+        padding: 0 16px;
+    }
+
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    .brand-name {
+        font-size: 15px;
+    }
+
+    .brand-sub {
+        font-size: 9px;
+    }
+
+    .hud-btn span.hud-btn-text {
+        display: none;
+    }
+
+    .intro-content {
+        padding: 32px 20px;
+        border-radius: 20px;
+    }
+
+    .intro-name {
+        font-size: 34px;
+    }
+
+    .intro-role {
+        font-size: 15px;
+    }
+
+    .intro-bio {
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .intro-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-cta {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .scroll-compass {
+        bottom: 16px;
+        padding: 4px 12px;
+    }
+
+    .compass-track {
+        width: 80px;
+    }
+
+    .compass-label {
+        font-size: 11px;
+        min-width: 100px;
+    }
+
+    .audio-widget {
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .audio-btn .audio-label {
+        display: none;
+    }
+
+    #explore-hud {
+        display: none !important; /* Hide WASD HUD on touch devices */
+    }
+}
+
+@media (max-width: 480px) {
+    .panel-drawer {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+
+    .panel-title {
+        font-size: 22px;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+}

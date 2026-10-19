@@ -1,0 +1,708 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- 1. Fullscreen WebGL Canvas for Three.js Island -->
+<canvas id="webgl-canvas" aria-hidden="true"></canvas>
+
+<!-- 2. Loading Screen -->
+<div id="loading-screen" role="status" aria-live="polite">
+    <div class="loader-emblem">
+        <div class="loader-ring"></div>
+        <div class="loader-ring outer"></div>
+        <div class="loader-symbol">S</div>
+    </div>
+    <h2 class="loader-title">SAALIM'S WORLD</h2>
+    <p class="loader-subtitle">Mohammed Saalim • Developer Portfolio</p>
+    <div class="loader-bar-wrap">
+        <div class="loader-bar-fill" id="loader-bar-fill"></div>
+    </div>
+    <p class="loader-status" id="loader-status-text">Materializing Floating Island...</p>
+    <button class="loader-skip-btn" id="skip-intro-btn">Enter Immediately</button>
+</div>
+
+<!-- 3. Heads-Up Display (HUD) Navigation -->
+<header class="hud-header" role="banner">
+    <div class="hud-brand" data-target="intro" title="Return to Sky View">
+        <div class="brand-icon" aria-hidden="true">S</div>
+        <div class="brand-info">
+            <span class="brand-name">{{ portfolio_profile.full_name }}</span>
+            <span class="brand-sub">Saalim's World</span>
+        </div>
+    </div>
+
+    <!-- Spatial Waypoint Navigation Pills -->
+    <nav class="hud-nav" aria-label="World locations navigation">
+        <button class="nav-pill active" data-target="gate">
+            <span class="nav-pill-dot"></span> Gate
+        </button>
+        <button class="nav-pill" data-target="home">
+            <span class="nav-pill-dot"></span> Home
+        </button>
+        <button class="nav-pill" data-target="tower">
+            <span class="nav-pill-dot"></span> Skills Tower
+        </button>
+        <button class="nav-pill" data-target="valley">
+            <span class="nav-pill-dot"></span> AgroSense &amp; Projects
+        </button>
+        <button class="nav-pill" data-target="hall">
+            <span class="nav-pill-dot"></span> Achievements
+        </button>
+        <button class="nav-pill" data-target="lighthouse">
+            <span class="nav-pill-dot"></span> Lighthouse
+        </button>
+    </nav>
+
+    <!-- Action Buttons -->
+    <div class="hud-actions">
+        <button class="hud-btn" id="explore-mode-btn" title="Toggle free walking exploration mode">
+            <span aria-hidden="true">🎮</span> <span class="hud-btn-text">Free Explore</span>
+        </button>
+        <button class="hud-btn" id="quality-toggle-btn" title="Toggle graphic quality">
+            <span class="hud-btn-text">Quality: HIGH</span>
+        </button>
+        <button class="hud-btn hud-btn-primary" id="recruiter-mode-btn" title="Toggle content-first recruiter reading mode">
+            <span aria-hidden="true">📄</span> <span class="hud-btn-text">Recruiter Mode</span>
+        </button>
+    </div>
+</header>
+
+<!-- 4. Cinematic Intro Screen (Opening Scene) -->
+<section id="intro-screen" aria-label="Introduction scene">
+    <div class="intro-content">
+        <div class="intro-tag">
+            <span aria-hidden="true">✨</span> The Journey of a Developer
+        </div>
+        <h1 class="intro-name">{{ portfolio_profile.full_name }}</h1>
+        <p class="intro-role">{{ portfolio_profile.headline }}</p>
+        <p class="intro-bio">
+            "I build, experiment, and explore the intersection of software engineering, interactive experiences, and emerging technology."
+        </p>
+        <div class="intro-actions">
+            <button class="btn-cta primary" id="explore-intro-btn">
+                <span>Explore My World</span> <span aria-hidden="true">↓</span>
+            </button>
+            <button class="btn-cta secondary" id="view-projects-intro-btn">
+                <span>View Projects &amp; AgroSense</span> <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- 5. Story Scroll Virtual Track (Drives 3D Camera Across the Island) -->
+<div id="story-scroll-container" aria-hidden="true">
+    <div class="story-waypoint" data-section="intro"></div>
+    <div class="story-waypoint" data-section="gate"></div>
+    <div class="story-waypoint" data-section="home"></div>
+    <div class="story-waypoint" data-section="tower"></div>
+    <div class="story-waypoint" data-section="valley"></div>
+    <div class="story-waypoint" data-section="hall"></div>
+    <div class="story-waypoint" data-section="lighthouse"></div>
+</div>
+
+<!-- 6. 3D Billboard Reticle Markers (Anchored to World Coordinates) -->
+<div id="poi-container" aria-hidden="true">
+    <div class="poi-marker" id="poi-gate" onclick="window.ProjectPanels.openByTag('gate', 'gate-entrance')">
+        <div class="poi-pin">⛩️</div>
+        <div class="poi-card">
+            <div class="poi-card-title">Entrance Gate</div>
+            <div class="poi-card-sub">Click to Inspect</div>
+        </div>
+    </div>
+
+    <div class="poi-marker" id="poi-home" onclick="window.ProjectPanels.openByTag('home_laptop', 'home-workspace')">
+        <div class="poi-pin">🏡</div>
+        <div class="poi-card">
+            <div class="poi-card-title">Developer Home</div>
+            <div class="poi-card-sub">About Me &amp; SSIT</div>
+        </div>
+    </div>
+
+    <div class="poi-marker" id="poi-tower" onclick="window.ProjectPanels.openByTag('tower_floor', 'floor-3')">
+        <div class="poi-pin">🗼</div>
+        <div class="poi-card">
+            <div class="poi-card-title">Skills Tower</div>
+            <div class="poi-card-sub">6 Technical Floors</div>
+        </div>
+    </div>
+
+    <div class="poi-marker" id="poi-agrosense" onclick="window.ProjectPanels.openByTag('project_agrosense', 'project-agrosense')">
+        <div class="poi-pin">🌱</div>
+        <div class="poi-card">
+            <div class="poi-card-title">AgroSense Station</div>
+            <div class="poi-card-sub">IoT &amp; Django Project</div>
+        </div>
+    </div>
+
+    <div class="poi-marker" id="poi-hall" onclick="window.ProjectPanels.openByTag('achievement_trophy', 'achievement-hackathon')">
+        <div class="poi-pin">🏆</div>
+        <div class="poi-card">
+            <div class="poi-card-title">Achievement Hall</div>
+            <div class="poi-card-sub">Trophy &amp; Certificate</div>
+        </div>
+    </div>
+
+    <div class="poi-marker" id="poi-lighthouse" onclick="window.ProjectPanels.openByTag('contact_terminal', 'contact-lighthouse')">
+        <div class="poi-pin">🗼</div>
+        <div class="poi-card">
+            <div class="poi-card-title">Contact Lighthouse</div>
+            <div class="poi-card-sub">Connect With Saalim</div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. Exploration Mode Control Guide HUD -->
+<aside id="explore-hud" aria-label="Character controls">
+    <div class="explore-hud-title">
+        <span aria-hidden="true">⌨️</span> Exploration Controls
+    </div>
+    <div class="explore-keys">
+        <div class="key-cap">W</div>
+        <div class="keys-row">
+            <div class="key-cap">A</div>
+            <div class="key-cap">S</div>
+            <div class="key-cap">D</div>
+        </div>
+    </div>
+    <div class="explore-hint">Move avatar across island plateau</div>
+    <button class="explore-exit-btn" id="exit-explore-btn">Return to Cinematic Camera</button>
+</aside>
+
+<!-- 8. Scroll Progress Compass -->
+<div class="scroll-compass" aria-label="Island journey progress">
+    <div class="compass-label" id="compass-location-text">Entrance Gate</div>
+    <div class="compass-track">
+        <div class="compass-bar" id="compass-bar-fill"></div>
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 9. INTERACTIVE DETAIL DRAWERS & MODALS (POPUP PANELS)                    -->
+<!-- ======================================================================= -->
+<div id="panel-overlay" class="panel-overlay" role="dialog" aria-modal="true" aria-labelledby="active-panel-title">
+    <div class="panel-drawer">
+        <button class="panel-close-btn" aria-label="Close dialog" title="Close">✕</button>
+
+        <!-- PANEL: Location A - Entrance Gate -->
+        <div id="panel-intro-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge">Location A • The Entrance Gate</span>
+                <h2 class="panel-title" id="active-panel-title">Welcome to Saalim's World</h2>
+                <p class="panel-subtitle">An interactive universe representing the continuous journey of a software developer.</p>
+            </div>
+            <p style="margin-bottom:16px;">
+                You have arrived at the floating island of <strong>Mohammed Saalim</strong>. Built with Three.js and Django, 
+                this universe connects every portfolio milestone into a coherent spatial story.
+            </p>
+            <div class="quick-action-buttons">
+                <button class="action-pill-btn primary" onclick="window.ProjectPanels.close(); window.WorldScrollStory.scrollToSection('home');">
+                    Walk to Developer Home →
+                </button>
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close(); window.WorldScrollStory.scrollToSection('valley');">
+                    Visit AgroSense Smart Farm
+                </button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location B - Developer Home / About Me -->
+        <div id="panel-about-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge">Location B • Developer Home</span>
+                <h2 class="panel-title">About Mohammed Saalim</h2>
+                <p class="panel-subtitle">Computer Science &amp; Engineering Student • Sri Siddhartha Institute of Technology (SSIT)</p>
+            </div>
+
+            <div style="display:flex; gap:24px; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap;">
+                <img src="{% static 'images/avatar.svg' %}" alt="Mohammed Saalim" style="width:96px; height:96px; border-radius:50%; border:2px solid var(--color-primary); flex-shrink:0;">
+                <div style="flex:1; min-width:260px;">
+                    <p style="margin-bottom:12px; color:var(--text-main);">
+                        I am an aspiring full-stack developer and software engineering student from <strong>Tumakuru, Karnataka, India</strong>, 
+                        graduating in the <strong>Batch of 2027</strong> from Sri Siddhartha Institute of Technology (SSIT).
+                    </p>
+                    <p style="color:var(--text-muted); font-size:14px; margin-bottom:12px;">
+                        My focus centers on establishing robust computer science fundamentals, architecting scalable backend applications using 
+                        <strong>Python and Django</strong>, modeling relational databases with <strong>MySQL</strong>, and creating interactive 
+                        web experiences with <strong>JavaScript and Three.js</strong>.
+                    </p>
+                    <div style="background:rgba(15,23,42,0.8); border:1px solid var(--border-subtle); border-radius:10px; padding:12px 16px; font-size:13px;">
+                        <strong>Academic Milestone:</strong> Latest reported CGPA of <strong>{{ portfolio_profile.cgpa }}</strong> at SSIT Tumakuru.
+                        <span style="color:var(--text-dim); display:block; font-size:11px; margin-top:2px;">(Truthfully reported interim academic standing, Batch 2027)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-action-buttons">
+                <a href="{{ portfolio_profile.linkjar_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn primary">
+                    🌐 Open Linkjar Profile
+                </a>
+                <a href="mailto:{{ portfolio_profile.email }}" class="action-pill-btn">
+                    ✉️ Email Saalim
+                </a>
+                <a href="tel:{{ portfolio_profile.phone }}" class="action-pill-btn">
+                    📞 Call +91 7975685763
+                </a>
+            </div>
+        </div>
+
+        <!-- PANEL: Location C - The Skills Tower (6 Floors) -->
+        <div id="panel-skills-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge">Location C • The Skills Tower</span>
+                <h2 class="panel-title">Technical Skills &amp; Knowledge Floors</h2>
+                <p class="panel-subtitle">Grounded proficiency across programming, frontend, backend, databases, core CS, and emerging tech.</p>
+            </div>
+
+            <!-- Floor Selector Tabs -->
+            <div class="drawer-tabs" role="tablist">
+                <button class="drawer-tab active" data-floor="1" data-tab-target="#pane-floor-1" role="tab">Floor 1: Languages</button>
+                <button class="drawer-tab" data-floor="2" data-tab-target="#pane-floor-2" role="tab">Floor 2: Frontend</button>
+                <button class="drawer-tab" data-floor="3" data-tab-target="#pane-floor-3" role="tab">Floor 3: Backend &amp; Django</button>
+                <button class="drawer-tab" data-floor="4" data-tab-target="#pane-floor-4" role="tab">Floor 4: Databases</button>
+                <button class="drawer-tab" data-floor="5" data-tab-target="#pane-floor-5" role="tab">Floor 5: Core CS</button>
+                <button class="drawer-tab" data-floor="6" data-tab-target="#pane-floor-6" role="tab">Floor 6: Tools &amp; AI</button>
+            </div>
+
+            {% for cat in categories %}
+            <div id="pane-floor-{{ cat.floor }}" class="tab-pane" style="{% if not forloop.first %}display:none;{% endif %}">
+                <div style="margin-bottom:14px;">
+                    <h3 style="font-size:18px; color:var(--text-main); margin-bottom:4px;">{{ cat.name }}</h3>
+                    <p style="font-size:13px; color:var(--text-muted);">{{ cat.description }}</p>
+                </div>
+
+                <div class="skills-grid">
+                    {% for skill in cat.skills %}
+                    <div class="skill-card">
+                        <div class="skill-card-header">
+                            <span class="skill-name">{{ skill.name }}</span>
+                            <span class="skill-status-tag {{ skill.status }}">{{ skill.status|title }}</span>
+                        </div>
+                        <p class="skill-desc">{{ skill.desc }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Special Interactive Django + MySQL Architecture Display on Floor 3 -->
+                {% if cat.floor == 3 %}
+                <div class="arch-showcase">
+                    <h4 style="font-size:16px; color:#10b981; margin-bottom:8px;">⚡ Dedicated Django &amp; MySQL Full-Stack Architecture Showcase</h4>
+                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+                        Interactive visualization of how requests flow from the client interface into the Django application layer and MySQL database:
+                    </p>
+                    <div class="arch-flow-diagram">
+                        <div class="arch-node">
+                            <div class="arch-node-title">1. Frontend Client</div>
+                            <div class="arch-node-tech">HTML5 • CSS3 • JavaScript</div>
+                            <div class="arch-node-desc">Forms, async Fetch/AJAX, CSRF token attachment, responsive UI.</div>
+                        </div>
+
+                        <div class="arch-connector">
+                            <div class="arch-packet"></div>
+                            <span>→</span>
+                        </div>
+
+                        <div class="arch-node" style="border-color:rgba(16,185,129,0.5);">
+                            <div class="arch-node-title">2. Django Application Layer</div>
+                            <div class="arch-node-tech">Python • MVT • Views • Auth</div>
+                            <div class="arch-node-desc">URL routing, middleware, server-side form validation, session auth, and business logic.</div>
+                        </div>
+
+                        <div class="arch-connector">
+                            <div class="arch-packet"></div>
+                            <span>→</span>
+                        </div>
+
+                        <div class="arch-node" style="border-color:rgba(245,158,11,0.5);">
+                            <div class="arch-node-title">3. Database System</div>
+                            <div class="arch-node-tech">MySQL • Django ORM</div>
+                            <div class="arch-node-desc">Normalized relational schemas, indexed lookups, ACID transactions, and data integrity.</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- PANEL: Location D - AgroSense Smart Agriculture -->
+        <div id="panel-agrosense-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge" style="background:rgba(16,185,129,0.15); color:#10b981;">Featured Project • IoT &amp; Django</span>
+                <h2 class="panel-title">AgroSense — Smart Farmer Crop Advisory System</h2>
+                <p class="panel-subtitle">Winner of ₹2,000 Cash Prize &amp; Certificate at SSIT Tumakuru Hackathon</p>
+            </div>
+
+            <img src="{% static 'images/agrosense-thumb.svg' %}" alt="AgroSense Preview" style="width:100%; border-radius:12px; margin-bottom:20px; border:1px solid var(--border-subtle);">
+
+            <div style="margin-bottom:20px;">
+                <h4 style="font-size:15px; color:#10b981; margin-bottom:6px;">Problem Statement:</h4>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:14px;">
+                    Traditional smallholder agriculture in developing regions relies on manual guesswork for crop irrigation. Overwatering drains water reservoirs and risks root disease, while under-watering stunts plant growth during critical heatwaves.
+                </p>
+
+                <h4 style="font-size:15px; color:#10b981; margin-bottom:6px;">Integrated Solution:</h4>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom:14px;">
+                    An end-to-end smart agricultural advisory system pairing an <strong>ESP32 microcontroller</strong> in the field with a central <strong>Django web platform</strong>. Environmental sensors (Soil Moisture, DHT22 temperature/humidity, LDR light) continuously sample the field and broadcast telemetry over <strong>MQTT</strong>. The Django backend analyzes telemetry against crop moisture thresholds to automatically pulse water pump relays or notify the farmer via their dashboard.
+                </p>
+
+                <h4 style="font-size:15px; color:#10b981; margin-bottom:6px;">Hardware &amp; Software Stack:</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+                    <span class="skill-status-tag proficient">Django</span>
+                    <span class="skill-status-tag proficient">Python</span>
+                    <span class="skill-status-tag proficient">ESP32 Microcontroller</span>
+                    <span class="skill-status-tag proficient">MQTT Protocol</span>
+                    <span class="skill-status-tag proficient">Soil Moisture Sensor</span>
+                    <span class="skill-status-tag proficient">DHT22 Temp &amp; Humidity</span>
+                    <span class="skill-status-tag proficient">LDR Light Sensor</span>
+                    <span class="skill-status-tag proficient">Relay Water Pump</span>
+                </div>
+
+                <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#fef3c7;">
+                    <strong>Notice on Live Project Link:</strong> The hosted deployment is accessible via the button below. Note that the live application requires user authentication / login.
+                </div>
+            </div>
+
+            <div class="quick-action-buttons">
+                <a href="{{ portfolio_profile.agrosense_live_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn primary">
+                    🚀 Visit Live AgroSense Project
+                </a>
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close(); window.WorldScrollStory.scrollToSection('hall');">
+                    🏆 View Hackathon Award Details
+                </button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location D - LONGLINK Observatory -->
+        <div id="panel-longlink-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8;">Private Communication Platform</span>
+                <h2 class="panel-title">LONGLINK — Family Network &amp; WebRTC Media</h2>
+                <p class="panel-subtitle">Django &amp; WebRTC Real-Time Private Video Network</p>
+            </div>
+            <img src="{% static 'images/longlink-thumb.svg' %}" alt="LONGLINK Preview" style="width:100%; border-radius:12px; margin-bottom:20px; border:1px solid var(--border-subtle);">
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:14px;">
+                A private, invite-only family network designed for secure audio/video communication and media sharing. Built on Django, Django Channels for WebSocket signaling, and browser WebRTC peer-to-peer data streams to ensure conversations remain private and direct without commercial telemetry.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+                <span class="skill-status-tag actively_learning">Python / Django</span>
+                <span class="skill-status-tag actively_learning">WebSockets / Channels</span>
+                <span class="skill-status-tag actively_learning">WebRTC Video/Audio</span>
+                <span class="skill-status-tag proficient">HTML5 / CSS3 / JS</span>
+            </div>
+            <div class="quick-action-buttons">
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close();">Close Details</button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location D - Formula 1 Experience -->
+        <div id="panel-f1-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge" style="background:rgba(239,68,68,0.15); color:#ef4444;">Personal Engineering Interest</span>
+                <h2 class="panel-title">Formula 1 &amp; Scuderia Ferrari Telemetry</h2>
+                <p class="panel-subtitle">Interactive Telemetry Visualization &amp; Aerodynamic Modeling</p>
+            </div>
+            <img src="{% static 'images/f1-thumb.svg' %}" alt="F1 Telemetry Preview" style="width:100%; border-radius:12px; margin-bottom:20px; border:1px solid var(--border-subtle);">
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:14px;">
+                Inspired by my passion for Formula 1 and Ferrari, this personal installation explores motorsport data telemetry: visualizing apex cornering speeds, throttle/brake telemetry traces, DRS aerodynamic activation, and tire degradation curves in real time.
+            </p>
+            <p style="font-size:12px; color:var(--text-dim); margin-bottom:18px;">
+                *Note: This is an independent creative developer exploration inspired by motorsport engineering and is not an official Formula 1 or Ferrari product.
+            </p>
+            <div class="quick-action-buttons">
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close();">Close Details</button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location E - Achievement Hall -->
+        <div id="panel-achievement-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge" style="background:rgba(245,158,11,0.15); color:#f59e0b;">Official Milestone • SSIT Tumakuru</span>
+                <h2 class="panel-title">SSIT Tumakuru Hackathon Achievement</h2>
+                <p class="panel-subtitle">Smart Farmer Crop Advisory System (AgroSense)</p>
+            </div>
+            <div style="background:rgba(30,41,59,0.7); border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:24px; margin-bottom:24px;">
+                <div style="font-size:32px; margin-bottom:12px;">🏆</div>
+                <h3 style="font-size:20px; color:#fff; margin-bottom:6px;">₹2,000 Cash Prize &amp; Certificate of Merit</h3>
+                <p style="font-size:14px; color:var(--color-secondary); margin-bottom:14px;">Awarded by Sri Siddhartha Institute of Technology (SSIT), Tumakuru</p>
+                <p style="font-size:14px; color:var(--text-muted); line-height:1.6;">
+                    Recognized for conceiving, developing, and presenting AgroSense — an IoT-based automated irrigation and crop advisory platform that solves real agricultural water-management challenges through hardware-cloud integration.
+                </p>
+            </div>
+            <div class="quick-action-buttons">
+                <button class="action-pill-btn primary" onclick="window.ProjectPanels.openByTag('certification_display', 'certification-fliplink')">
+                    📜 View Official Certification
+                </button>
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close(); window.WorldScrollStory.scrollToSection('valley');">
+                    Inspect AgroSense Station
+                </button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location E - Certification Display -->
+        <div id="panel-certification-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge">Certification</span>
+                <h2 class="panel-title">Official Verified Credential</h2>
+                <p class="panel-subtitle">Verified via FlipLink Credential Viewer</p>
+            </div>
+            <img src="{% static 'images/certificate-preview.svg' %}" alt="Verified Certificate" style="width:100%; border-radius:12px; margin-bottom:20px; border:1px solid var(--border-subtle);">
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">
+                This certificate credential has been published and verified online. You can view the full official credential document directly on FlipLink.
+            </p>
+            <div class="quick-action-buttons">
+                <a href="{{ portfolio_profile.certificate_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn primary">
+                    🔗 View Certificate on FlipLink
+                </a>
+                <button class="action-pill-btn" onclick="window.ProjectPanels.close();">Close</button>
+            </div>
+        </div>
+
+        <!-- PANEL: Location F - Contact Lighthouse Terminal -->
+        <div id="panel-contact-details" class="panel-content-section" style="display:none;">
+            <div class="panel-header">
+                <span class="panel-badge">Location F • The Contact Lighthouse</span>
+                <h2 class="panel-title">Connect with Mohammed Saalim</h2>
+                <p class="panel-subtitle">Direct contact details &amp; secure Django message submission</p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Direct Details Card -->
+                <div class="contact-info-card">
+                    <div class="contact-item">
+                        <div class="contact-item-icon">✉️</div>
+                        <div>
+                            <div class="contact-item-label">Email Address</div>
+                            <a href="mailto:{{ portfolio_profile.email }}" class="contact-item-val">{{ portfolio_profile.email }}</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-item-icon">📞</div>
+                        <div>
+                            <div class="contact-item-label">Phone Number</div>
+                            <a href="tel:{{ portfolio_profile.phone }}" class="contact-item-val">{{ portfolio_profile.phone }}</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-item-icon">📍</div>
+                        <div>
+                            <div class="contact-item-label">Location</div>
+                            <div class="contact-item-val">{{ portfolio_profile.location }}</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-item-icon">🔗</div>
+                        <div>
+                            <div class="contact-item-label">All Profiles (Linkjar)</div>
+                            <a href="{{ portfolio_profile.linkjar_url }}" target="_blank" rel="noopener noreferrer" class="contact-item-val">{{ portfolio_profile.linkjar_url }}</a>
+                        </div>
+                    </div>
+
+                    <div class="quick-action-buttons">
+                        <a href="mailto:{{ portfolio_profile.email }}" class="action-pill-btn primary">Email Me</a>
+                        <a href="tel:{{ portfolio_profile.phone }}" class="action-pill-btn">Call Me</a>
+                        <a href="{{ portfolio_profile.linkjar_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn">Linkjar Profile</a>
+                    </div>
+                </div>
+
+                <!-- Django Contact Form -->
+                <div>
+                    <form id="contact-form" method="post" action="{% url 'portfolio:contact_submit' %}">
+                        {% csrf_token %}
+                        <!-- Honeypot anti-spam field -->
+                        {{ contact_form.website }}
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_name">Your Name</label>
+                            {{ contact_form.name }}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_email">Your Email</label>
+                            {{ contact_form.email }}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_subject">Subject</label>
+                            {{ contact_form.subject }}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="id_message">Message</label>
+                            {{ contact_form.message }}
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <span>Send Message to Saalim</span> <span aria-hidden="true">→</span>
+                        </button>
+
+                        <div class="form-alert" role="alert"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- 10. ACCESSIBLE RECRUITER CONTENT-FIRST VIEW (NON-WEBGL & RECRUITER MODE)-->
+<!-- ======================================================================= -->
+<main id="accessible-content" role="main">
+    <div class="no-webgl-banner" role="status">
+        <strong>Notice:</strong> Your browser or device does not currently support hardware-accelerated WebGL. 
+        Displaying the complete, accessible developer portfolio of Mohammed Saalim below.
+    </div>
+
+    <!-- Recruiter Hero Card -->
+    <div class="recruiter-hero">
+        <img src="{% static 'images/avatar.svg' %}" alt="Mohammed Saalim Avatar" class="recruiter-avatar">
+        <div class="recruiter-details">
+            <span class="badge-featured" style="margin-left:0; margin-bottom:8px; display:inline-block;">Candidate Profile</span>
+            <h1 style="font-size:32px; font-weight:900; margin-bottom:6px;">{{ portfolio_profile.full_name }}</h1>
+            <h2 style="font-size:18px; color:var(--color-secondary); margin-bottom:12px; font-weight:600;">{{ portfolio_profile.headline }}</h2>
+            <p style="color:var(--text-muted); font-size:15px; margin-bottom:16px;">
+                Computer Science and Engineering student at <strong>Sri Siddhartha Institute of Technology (SSIT)</strong>, Tumakuru, Karnataka, India (Batch 2027). 
+                Passionate about software architecture, full-stack application engineering with Django and MySQL, and interactive web experiences.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                <a href="mailto:{{ portfolio_profile.email }}" class="action-pill-btn primary">✉️ {{ portfolio_profile.email }}</a>
+                <a href="tel:{{ portfolio_profile.phone }}" class="action-pill-btn">📞 {{ portfolio_profile.phone }}</a>
+                <a href="{{ portfolio_profile.linkjar_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn">🌐 Linkjar Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education Section -->
+    <section class="recruiter-section" aria-labelledby="sec-edu">
+        <h3 id="sec-edu" class="recruiter-section-title">🎓 Education &amp; Academic Milestones</h3>
+        <div style="background:rgba(30,41,59,0.5); border:1px solid var(--border-subtle); border-radius:12px; padding:20px;">
+            <h4 style="font-size:18px; color:#fff;">{{ portfolio_profile.education_degree }}</h4>
+            <p style="color:var(--color-secondary); font-size:14px; margin-bottom:6px;">{{ portfolio_profile.education_institution }} — {{ portfolio_profile.education_location }}</p>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:8px;">Graduation Batch: <strong>{{ portfolio_profile.graduation_batch }}</strong></p>
+            <p style="color:var(--color-primary); font-size:14px;"><strong>Academic Standing:</strong> Latest reported CGPA: <strong>{{ portfolio_profile.cgpa }}</strong></p>
+        </div>
+    </section>
+
+    <!-- Technical Skills Section -->
+    <section class="recruiter-section" aria-labelledby="sec-skills">
+        <h3 id="sec-skills" class="recruiter-section-title">💻 Technical Skills Overview</h3>
+        {% for cat in categories %}
+        <div style="margin-bottom:24px;">
+            <h4 style="font-size:16px; color:var(--color-secondary); margin-bottom:12px;">Floor {{ cat.floor }}: {{ cat.name }}</h4>
+            <div class="skills-grid">
+                {% for skill in cat.skills %}
+                <div class="skill-card">
+                    <div class="skill-card-header">
+                        <span class="skill-name">{{ skill.name }}</span>
+                        <span class="skill-status-tag {{ skill.status }}">{{ skill.status|title }}</span>
+                    </div>
+                    <p class="skill-desc">{{ skill.desc }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Featured Projects Section -->
+    <section class="recruiter-section" aria-labelledby="sec-projects">
+        <h3 id="sec-projects" class="recruiter-section-title">🚀 Featured Projects</h3>
+        {% for project in projects %}
+        <article class="project-card-recruiter">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <h4 style="font-size:19px; color:#fff;">{{ project.title }}</h4>
+                {% if project.is_featured %}<span class="badge-featured">Featured Project</span>{% endif %}
+            </div>
+            <p style="color:var(--color-secondary); font-size:14px; margin-bottom:12px;">{{ project.tagline }}</p>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:12px;"><strong>Problem:</strong> {{ project.problem_statement }}</p>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:14px;"><strong>Solution:</strong> {{ project.solution }}</p>
+            <div style="margin-bottom:16px;">
+                <strong style="font-size:12px; color:var(--text-dim); text-transform:uppercase;">Technologies:</strong>
+                <div style="color:#a7f3d0; font-family:var(--font-mono); font-size:13px; margin-top:4px;">{{ project.tech_stack }}</div>
+            </div>
+            {% if project.live_url %}
+            <div style="margin-top:12px;">
+                <a href="{{ project.live_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn primary">
+                    Visit Live Project →
+                </a>
+                {% if project.requires_login %}
+                <span style="font-size:12px; color:var(--color-accent); margin-left:12px;">(Requires login credentials)</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </section>
+
+    <!-- Hackathon & Certification Section -->
+    <section class="recruiter-section" aria-labelledby="sec-awards">
+        <h3 id="sec-awards" class="recruiter-section-title">🏆 Hackathon Achievements &amp; Certification</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+            <div style="background:rgba(30,41,59,0.5); border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:20px;">
+                <span style="font-size:28px;">🏆</span>
+                <h4 style="font-size:17px; color:#fff; margin:8px 0 4px 0;">SSIT Tumakuru Hackathon</h4>
+                <div style="color:var(--color-accent); font-weight:700; font-size:15px; margin-bottom:8px;">₹2,000 Cash Prize &amp; Certificate</div>
+                <p style="font-size:13px; color:var(--text-muted);">
+                    Awarded for developing AgroSense — Smart Farmer Crop Advisory System using Django, ESP32, MQTT and environmental sensor automation.
+                </p>
+            </div>
+
+            <div style="background:rgba(30,41,59,0.5); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:20px;">
+                <span style="font-size:28px;">📜</span>
+                <h4 style="font-size:17px; color:#fff; margin:8px 0 4px 0;">Official Certification</h4>
+                <div style="color:var(--color-secondary); font-weight:700; font-size:15px; margin-bottom:8px;">Verified FlipLink Credential</div>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+                    Official certificate credential verified on FlipLink.
+                </p>
+                <a href="{{ portfolio_profile.certificate_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn primary">
+                    View Certificate on FlipLink →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recruiter Contact Section -->
+    <section class="recruiter-section" aria-labelledby="sec-contact">
+        <h3 id="sec-contact" class="recruiter-section-title">📬 Contact &amp; Opportunities</h3>
+        <p style="color:var(--text-muted); font-size:15px; margin-bottom:20px;">
+            I am actively looking for software engineering internships, developer roles, and technical collaborations. 
+            Feel free to connect directly through any of the channels below.
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            <a href="mailto:{{ portfolio_profile.email }}" class="action-pill-btn primary">Email: {{ portfolio_profile.email }}</a>
+            <a href="tel:{{ portfolio_profile.phone }}" class="action-pill-btn">Phone: {{ portfolio_profile.phone }}</a>
+            <a href="{{ portfolio_profile.linkjar_url }}" target="_blank" rel="noopener noreferrer" class="action-pill-btn">Linkjar Profile</a>
+        </div>
+    </section>
+</main>
+
+<!-- 11. Toast Notifications Container -->
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- 3D World Scripts -->
+<script src="{% static 'js/world/performance.js' %}"></script>
+<script src="{% static 'js/world/lighting.js' %}"></script>
+<script src="{% static 'js/world/scene.js' %}"></script>
+<script src="{% static 'js/world/camera.js' %}"></script>
+<script src="{% static 'js/world/terrain.js' %}"></script>
+<script src="{% static 'js/world/water.js' %}"></script>
+<script src="{% static 'js/world/environment.js' %}"></script>
+<script src="{% static 'js/world/locations.js' %}"></script>
+<script src="{% static 'js/world/character.js' %}"></script>
+<script src="{% static 'js/world/controls.js' %}"></script>
+<script src="{% static 'js/world/scroll-story.js' %}"></script>
+<script src="{% static 'js/world/interactions.js' %}"></script>
+<script src="{% static 'js/world/sound.js' %}"></script>
+
+<!-- UI Scripts -->
+<script src="{% static 'js/ui/project-panels.js' %}"></script>
+<script src="{% static 'js/ui/contact.js' %}"></script>
+<script src="{% static 'js/ui/navigation.js' %}"></script>
+
+<!-- Main Engine Orchestrator -->
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}
