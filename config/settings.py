@@ -85,6 +85,21 @@ if DB_ENGINE == 'mysql':
             },
         }
     }
+elif os.environ.get('VERCEL'):
+    import shutil
+    db_file = Path('/tmp') / 'db.sqlite3'
+    source_db = BASE_DIR / 'db.sqlite3'
+    if source_db.exists() and not db_file.exists():
+        try:
+            shutil.copy2(source_db, db_file)
+        except Exception:
+            pass
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': db_file,
+        }
+    }
 else:
     DATABASES = {
         'default': {
@@ -121,7 +136,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Media files (User uploads, certificates, resume)
 MEDIA_URL = '/media/'
